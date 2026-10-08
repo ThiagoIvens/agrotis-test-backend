@@ -2,7 +2,7 @@
 
 Projeto de resposta ao teste da Agrotis para vaga de Desenvolvedor Fullstack.
  
-Inicialização do projeto:
+- Inicialização do projeto:
 	- Clone o repositório
 	- Abra em uma IDE de sua preferencia (Eclipse, Intelij)
 	- Copie o arquivo de referencia `src\main\resources\application.properties.example` para `src\main\resources\application.properties`

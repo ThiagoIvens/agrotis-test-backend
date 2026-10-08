@@ -7,7 +7,7 @@
     - Configurei o application.properties e adicionei ele no .gitignore
     - Configurei o pom.xml com dados que faltavam para especificar o projeto (nome, url, desenvolvedores, licensa, etc...)
 
-- Fiz a modelagem do banco de dados no Excalidraw e coloquei no projeto no arquivo db_diagram.excalidraw
+- Fiz a modelagem do banco de dados no Excalidraw e coloquei no projeto no arquivo `db_diagram.excalidraw`
 
 - Comecei criando as entidades que modelei.
     - BaseEntity
@@ -19,3 +19,22 @@
     - Grower
 
 - Rodei o projeto e verifiquei tudo com o [DBeaver CE](https://dbeaver.io/)
+
+- Parti para a criação dos DTOs
+	- Resolve criar um DTO Base para padronizar atributos igual nas Entidades.
+		- Pedi para a IA gerar o DTO base para mim:
+			```
+			Gere um DTO base abstrato de request para ser implementado por outros DTOs.
+				- Utilize Java 17 + Spring 3.4.x + Hibernate;
+				- Utilizei Lombok para Getters e Setters nas entidades;
+				- Tem que ter Name, registration e address (todos String e notblank);
+			```
+		- Li um pouco sobre validação de cpf e cnpj em Java no [Medium](https://medium.com/blog-gilson-silva-ti/validando-cpf-cnpj-na-mesma-vari%C3%A1vel-com-bean-validation-4429a49e9bb5)
+		- Visando não construir do zero isso. Resolvi usar esta dependencia (nos comentarios) e pedir para a IA gerar utilizando o seguinte prompt:
+			```
+			Gere um validador de um campo de inscrição fiscal (registration) em Java para CPF e CNPJ junto.
+				- Use org.hibernate.validator.constraints.br para interface CPF e CNPJ.
+				- Tenha uma mensagem padrão de erro.
+				- Seja possivel a implementação de validação através do DTO.
+			```
+	- Somente criei os DTOs restantes.
