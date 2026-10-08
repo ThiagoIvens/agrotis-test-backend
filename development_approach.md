@@ -8,3 +8,14 @@
     - Configurei o pom.xml com dados que faltavam para especificar o projeto (nome, url, desenvolvedores, licensa, etc...)
 
 - Fiz a modelagem do banco de dados no Excalidraw e coloquei no projeto no arquivo db_diagram.excalidraw
+
+- Comecei criando as entidades que modelei.
+    - BaseEntity
+        - Para isto eu li um tutorial no [Medium](https://medium.com/@kouomeukevin/create-a-base-entity-with-jpa-8adb35d2b7a3) sobre como fazer uma classe genérica em JPA. Bem parecido com Nestjs.
+        - Por implementar o Serializable eu preciso colocar um identificador de versão unico para cada classe que implementa esta interface
+    - Laboratory
+        - Para os relacionamentos eu olhei a doc do [jakarta](https://jakarta.ee/specifications/persistence/2.2/apidocs/javax/persistence) e percebi que relacionamentos tem difereça de FetchType, padronizado para cada um (OneToOne, OneToMany, ManyToOne e ManyToMany), alguns são Eager e outros são Lazy
+    - Farmstead
+    - Grower
+
+- Rodei o projeto e verifiquei tudo com o [DBeaver CE](https://dbeaver.io/)
