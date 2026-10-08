@@ -68,10 +68,102 @@
 	- Para parte do DTO do report tinha ficado meio confuso para mim esse proxy que ele faz. Então tive que pesquisar um pouco para entender.
 	- Criei o DTO de filtro do report.
 
+- Criação dos services de cada entidade.
+	- Visando ter listagens paginatadas pedi para IA gerar esse componente para otimizar tempo.
+		```
+			Atue como um Arquiteto de Software Java Sênior. Preciso da implementação de uma classe utilitária de resposta paginada genérica (`PaginatedResponse<T>` ou `PaginatedData<T>`) para ser utilizada nas camadas de Service e Controller de uma aplicação backend.
+			Stack e Tecnologias:
+				- Java 17 (Aproveite recursos modernos como `record` se apropriado, ou classes imutáveis com construtores adequados para serialização JSON).
+				- Spring Boot 3.4.x (Spring Data `Page` / `Pageable`).
+				- Jackson (para serialização/deserialização JSON limpa, sem campos nulos desnecessários).
+			Requisitos Funcionais e Estrutura do DTO:
+			1. A resposta deve ser genérica (`T`) e encapsular os dados de forma limpa para APIs REST.
+			2. Deve conter a seguinte estrutura de metadados de paginação:
+				- `content`: `List<T>` (lista de dados da página atual)
+				- `pageNumber`: int (índice da página atual, 0-indexed)
+				- `pageSize`: int (tamanho da página)
+				- `totalElements`: long (total de elementos no banco)
+				- `totalPages`: int (total de páginas disponíveis)
+				- `isFirst`: boolean (se é a primeira página)
+				- `isLast`: boolean (se é a última página)
+				- `hasNext`: boolean (se existe próxima página)
+				- `hasPrevious`: boolean (se existe página anterior)
+			3. Forneça um método utilitário estático `from(Page<T> page)` que converta diretamente um objeto `org.springframework.data.domain.Page<T>` na estrutura criada.
+			4. Forneça um método utilitário estático `from(Page<U> page, Function<U, T> mapper)` para permitir o mapeamento/conversão de Entidade (`U`) para DTO (`T`) diretamente ao instanciar a paginação.
+			5. Forneça uma estrutura base de um mapper de entidade para DTO e vice-versa.
+			
+			Entregáveis Esperados:
+			1. Código Java completo da estrutura `PaginatedResponse<T>`.
+			2. Exemplo prático de uso no Service (convertendo Entidade para DTO via `from(...)`).
+			3. Exemplo de consumo no Controller retornando `ResponseEntity<PaginatedResponse<MyDto>>`.
+			4. Anotações OpenAPI/Swagger (Springdoc v2) adequadas, se aplicável, para documentação dos metadados.
+		```
+	- Pesquisei sobre o retorno de exceções em services no Spring.
+	- Ele gerou um mapper meio estranho, pesquisando eu usei um mapper padrao como se faz em Nestjs mesmo so adicionando a anotação @Component.
+	- Repliquei o codigo base que criei para LaboratoryService para os demais e fiz os ajustes necessarios de cada uma.
+
+- Criação dos controllers com IA:
+	```
+		Atue como um Arquiteto de Software Java Sênior especializado em Spring Boot.
+
+		Preciso da implementação completa e pronta para uso dos Controllers REST para 3 serviços da minha aplicação. Como não tenho domínio avançado sobre todas as anotações e configurações do ecossistema Java/Spring, QUERO QUE VOCÊ PENSE POR MIM e tome todas as decisões de design, anotações de API, validações e documentação OpenAPI/Swagger.
+
+		### 1. SERVIÇOS E MÉTODOS QUE DEVEM SER ATENDIDOS
+
+		1. LaboratoryService:
+		- List<LaboratoryReportResponseDTO> generateReport(ReportFilterDTO filter);
+		- PaginatedResponse<LaboratoryDTO> getAll(Pageable pageable);
+		- LaboratoryDTO findById(UUID id);
+		- LaboratoryDTO create(LaboratoryRequestDTO request);
+		- LaboratoryDTO update(UUID id, LaboratoryRequestDTO request);
+		- void delete(UUID id);
+
+		2. GrowerService:
+		- PaginatedResponse<GrowerDTO> getAll(Pageable pageable);
+		- GrowerDTO findById(UUID id);
+		- GrowerDTO create(GrowerRequestDTO request);
+		- GrowerDTO update(UUID id, GrowerRequestDTO request);
+		- void delete(UUID id);
+
+		3. FarmsteadService:
+		- PaginatedResponse<FarmsteadDTO> getAll(Pageable pageable);
+		- FarmsteadDTO findById(UUID id);
+		- FarmsteadDTO create(FarmsteadRequestDTO request);
+		- FarmsteadDTO update(UUID id, FarmsteadRequestDTO request);
+		- void delete(UUID id);
+
+		### 2. O QUE VOCÊ DEVE CONFIGURAR AUTOMATICAMENTE (DECISÕES TÉCNICAS)
+
+		- Mapeamento e Verbos REST:
+		- Adicione as rotas base corretas em plural (ex: `/api/v1/laboratories`, `/api/v1/growers`, `/api/v1/farmsteads`).
+		- Mapeie cada método para o verbo correto (GET para busca/relatório, POST para criação, PUT para edição, DELETE para remoção).
+		- Trate a resposta do POST para retornar o status HTTP `201 Created` junto com o cabeçalho `Location` apontando para o novo ID.
+		- Trate o DELETE para retornar HTTP `204 No Content`.
+		- Trate as buscas e relatórios com HTTP `200 OK`.
+
+		- Anotações do Spring Boot e Lombok:
+		- Inclua todas as anotações de Controller (`@RestController`, `@RequestMapping`, `@CrossOrigin` se aplicável).
+		- Adicione as anotações de validação (`@Valid`) nos corpos de requisição (`@RequestBody`) e nos parâmetros de rota (`@PathVariable`).
+
+		- Documentação Completa do Swagger / OpenAPI 3:
+		- Adicione todas as anotações do Swagger (`@Tag`, `@Operation`, `@ApiResponse`, `@ApiResponses`).
+		- Mapeie e documente as respostas de sucesso (200, 201, 204) e as respostas padrão de erro (400 Bad Request, 404 Not Found, 500 Internal Error) em cada endpoint.
+		- Para as rotas com paginação (`Pageable`), adicione a anotação correta (ex: `@ParameterObject` do springdoc) para que o Swagger exiba os campos `page`, `size` e `sort` de forma legível na interface visual.
+
+		- Importações (Imports):
+		- Liste TODOS os `import`s necessários no topo de cada classe para que eu só precise copiar e colar o código no meu projeto sem erros de compilação.
+
+		### 3. FORMATO DA SAÍDA
+
+		Forneça os códigos completos das 3 classes Controller Java (`LaboratoryController`, `GrowerController` e `FarmsteadController`), divididos em blocos de código independentes, com comentários explicativos nos pontos onde decisões importantes foram tomadas.
+	```
+	- O meu por estar em modo Mentor acabou gerando somente o primeiro como base e então repliquei para os demais.
+	- Tambem usei o proprio corretor de warnings para ajustar algumas warnings que mostravam por ser Null Safe.
+	- Pedi para a IA gerar alguns DTO e corrigir uns que havia deixado um pouco de lado na construção dos services.
+	- Chequei o Swagger para ver se estava tudo certo.
 
 TODO:
-- Criar os services de cada entidade.
-- Criar os endpoints para cada service com IA implementando com Swagger para documentação.
+- Frontend em React.
+
 - Criar os testes para cada endpoint com IA tambem para poupar tempo.
 - Rodar os testes e validar a cobertura tambem.
-- Frontend em React.
