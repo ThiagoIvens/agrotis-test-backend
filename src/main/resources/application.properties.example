@@ -1,0 +1,17 @@
+spring.application.name=challenge
+
+// Retira o banner inicial do Spring no console ao rodar o projeto
+spring.main.banner-mode=off
+// Mostra logs de nivel warn par cima, limpando o console de INFO logs
+logging.level.root=warn
+
+// Configuração do banco de dados
+spring.datasource.url=jdbc:postgresql://localhost:5432/YOUR_DATABASE
+spring.datasource.username=YOUR_DATABASE_USER
+spring.datasource.password=YOUR_DATABASE_PASSWORD
+// Auto migration ao alterar entidades
+spring.jpa.hibernate.ddl-auto=update
+
+// Debug de banco de dados (Mostra as queries no console)
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
