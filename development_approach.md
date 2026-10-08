@@ -38,3 +38,20 @@
 				- Seja possivel a implementação de validação através do DTO.
 			```
 	- Somente criei os DTOs restantes.
+
+
+- Segui para a etapa 2.
+	- A principio pensei um pouco sobre como implementar isso. Os pontos levantados foram:
+		- Preciso implementar um metodo que possa ser abstraido para cada classe e ela implemente o seu tipo de calculo.
+			- Como olhei os metodos criado pela IA anteriormente. Resolvi criar uma interface para isso.
+		- Preciso implementar em cada classe propriedades que façam sentido para um calculo.
+			- Produtor -> produção total, comissão por produção.
+				- Calcula o retorno da produção.
+			- Propriedade -> area total em hectares, taxa por hectare.
+				- Calcula a taxa total da propriedade.
+			- Laboratorio -> custo de operação, taxa de operação
+				- Impõe a taxa em cima dos custos de operação do laborátorio
+		- Preciso de um tipo para calculo financeiro em Java.
+			- BigDecimal foi o que encontrei na comunidade em geral.
+			- Em Nestjs usamos decimal.
+	- Como não conheço todas anotações possiveis ainda. Utilizei a IA para revisar as anotações dos meus DTOs nessa parte.
