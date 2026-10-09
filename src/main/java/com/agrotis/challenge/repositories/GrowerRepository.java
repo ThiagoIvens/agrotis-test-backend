@@ -19,8 +19,13 @@ public interface GrowerRepository extends JpaRepository<Grower, UUID> {
 	@NonNull
 	Page<Grower> findAll(@NonNull Pageable pageable);
 
-	@Query(value = "SELECT DISTINCT g FROM Grower g LEFT JOIN FETCH g.farmsteads LEFT JOIN FETCH g.laboratory", countQuery = "SELECT count(g) FROM Grower g")
-	Page<Grower> findAllWithRelations(Pageable pageable);
+	@Query("SELECT DISTINCT g FROM Grower g " +
+	           "LEFT JOIN g.laboratory l " +
+	           "LEFT JOIN g.farmsteads f " +
+	           "WHERE (:search IS NULL OR :search = '' OR " +
+	           "LOWER(g.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+	           "LOWER(g.registration) LIKE LOWER(CONCAT('%', :search, '%')))")
+	Page<Grower> findAllWithRelations(@Param("search") String search, Pageable pageable);
 
 	@Query("SELECT g FROM Grower g LEFT JOIN FETCH g.farmsteads LEFT JOIN FETCH g.laboratory WHERE g.id = :id")
 	Optional<Grower> findByIdWithRelations(@Param("id") UUID id);

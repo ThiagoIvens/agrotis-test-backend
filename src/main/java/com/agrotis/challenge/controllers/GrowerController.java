@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -45,8 +46,8 @@ public class GrowerController {
 	@Operation(summary = "Listar produtores", description = "Retorna uma lista paginada de produtores.")
 	@ApiResponse(responseCode = "200", description = "Busca realizada com sucesso")
 	@SuppressWarnings("null") // Pelo que entendi a resolução do pageable é garantida pelo framework Spring
-	public ResponseEntity<PaginatedResponse<GrowerDTO>> getAll(@ParameterObject Pageable pageable) {
-		return ResponseEntity.ok(growerService.getAll(pageable));
+	public ResponseEntity<PaginatedResponse<GrowerDTO>> getAll(@RequestParam(required = false) String search, @ParameterObject Pageable pageable) {
+		return ResponseEntity.ok(growerService.getAll(search, pageable));
 	}
 
 	@GetMapping("/{id}")

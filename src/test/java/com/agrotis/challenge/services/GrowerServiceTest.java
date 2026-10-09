@@ -62,17 +62,17 @@ class GrowerServiceTest {
 		Pageable pageable = PageRequest.of(0, 10);
 		Page<Grower> growerPage = new PageImpl<>(List.of(grower), pageable, 1);
 
-		when(growerRepository.findAllWithRelations(pageable)).thenReturn(growerPage);
+		when(growerRepository.findAllWithRelations(null, pageable)).thenReturn(growerPage);
 		when(growerMapper.toDTO(any(Grower.class))).thenReturn(responseDTO);
 
 		// Act
-		PaginatedResponse<GrowerDTO> result = growerService.getAll(pageable);
+		PaginatedResponse<GrowerDTO> result = growerService.getAll(null, pageable);
 
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.content()).hasSize(1);
 		assertThat(result.totalElements()).isEqualTo(1);
-		verify(growerRepository, times(1)).findAllWithRelations(pageable);
+		verify(growerRepository, times(1)).findAllWithRelations(isNull(), eq(pageable));
 	}
 
 	@Test

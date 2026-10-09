@@ -100,7 +100,7 @@ class GrowerControllerTest {
 			var growerPage = new PageImpl<>(List.of(growerDTO), PageRequest.of(0, 10), 1L);
 			PaginatedResponse<GrowerDTO> paginatedResponse = PaginatedResponse.from(growerPage);
 
-			given(growerService.getAll(any(Pageable.class))).willReturn(paginatedResponse);
+			given(growerService.getAll(any(), any(Pageable.class))).willReturn(paginatedResponse);
 
 			mockMvc.perform(get("/api/v1/growers").param("page", "0").param("size", "10")
 					.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())

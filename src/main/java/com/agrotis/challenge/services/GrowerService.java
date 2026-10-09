@@ -37,8 +37,8 @@ public class GrowerService {
 	private final GrowerMapper growerMapper;
 
 	@Transactional(readOnly = true)
-	public PaginatedResponse<GrowerDTO> getAll(@NonNull Pageable pageable) {
-		Page<Grower> page = growerRepository.findAllWithRelations(pageable);
+	public PaginatedResponse<GrowerDTO> getAll(String search, @NonNull Pageable pageable) {
+		Page<Grower> page = growerRepository.findAllWithRelations(search, pageable);
 		return PaginatedResponse.from(page, growerMapper::toDTO);
 	}
 
