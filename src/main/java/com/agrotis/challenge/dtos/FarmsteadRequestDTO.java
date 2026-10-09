@@ -1,7 +1,6 @@
 package com.agrotis.challenge.dtos;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -15,9 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FarmsteadRequestDTO extends BaseRequestDTO {
-
-	@NotNull(message = "A propriedade deve estar vinculada a um produtor.")
-	private UUID growerId;
 
 	@NotNull(message = "A área total é obrigatória.")
 	@Positive(message = "A área deve ser maior que zero.")

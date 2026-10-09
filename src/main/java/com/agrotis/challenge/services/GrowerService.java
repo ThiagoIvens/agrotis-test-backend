@@ -1,6 +1,10 @@
 package com.agrotis.challenge.services;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -13,8 +17,12 @@ import com.agrotis.challenge.dtos.GrowerDTO;
 import com.agrotis.challenge.dtos.GrowerRequestDTO;
 import com.agrotis.challenge.dtos.PaginatedResponse;
 import com.agrotis.challenge.dtos.mappers.GrowerMapper;
+import com.agrotis.challenge.entities.Farmstead;
 import com.agrotis.challenge.entities.Grower;
+import com.agrotis.challenge.entities.Laboratory;
+import com.agrotis.challenge.repositories.FarmsteadRepository;
 import com.agrotis.challenge.repositories.GrowerRepository;
+import com.agrotis.challenge.repositories.LaboratoryRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +31,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GrowerService {
 
-	private final GrowerRepository growerRepository = null;
-	private final GrowerMapper growerMapper = new GrowerMapper();
+	private final GrowerRepository growerRepository;
+	private final LaboratoryRepository laboratoryRepository;
+	private final FarmsteadRepository farmsteadRepository;
+	private final GrowerMapper growerMapper;
 
 	@Transactional(readOnly = true)
 	public PaginatedResponse<GrowerDTO> getAll(@NonNull Pageable pageable) {
@@ -43,6 +53,7 @@ public class GrowerService {
 	@Transactional
 	public GrowerDTO create(GrowerRequestDTO request) {
 		Grower entity = Objects.requireNonNull(growerMapper.toEntity(request));
+		applyRelations(entity, request);
 		Grower saved = growerRepository.save(entity);
 		return growerMapper.toDTO(saved);
 	}
@@ -53,6 +64,7 @@ public class GrowerService {
 				.orElseThrow(() -> new EntityNotFoundException("Produtor não encontrado com o ID: " + id)));
 
 		growerMapper.updateEntityFromDTO(request, entity);
+		applyRelations(entity, request);
 		Grower updated = growerRepository.save(entity);
 		return growerMapper.toDTO(updated);
 	}
@@ -63,5 +75,26 @@ public class GrowerService {
 			throw new EntityNotFoundException("Produtor não encontrado com o ID: " + id);
 		}
 		growerRepository.deleteById(id);
+	}
+
+	private void applyRelations(Grower entity, GrowerRequestDTO request) {
+		UUID laboratoryId = request.getLaboratoryId();
+		if (laboratoryId != null) {
+			Laboratory lab = laboratoryRepository.findById(laboratoryId)
+					.orElseThrow(() -> new EntityNotFoundException(
+							"Laboratório não encontrado com o ID: " + request.getLaboratoryId()));
+			entity.setLaboratory(lab);
+		} else {
+			entity.setLaboratory(null);
+		}
+
+		if (request.getFarmsteadIds() != null) {
+			Set<UUID> ids = new HashSet<>(request.getFarmsteadIds());
+			List<Farmstead> farmsteads = farmsteadRepository.findAllById(ids);
+			if (farmsteads.size() != ids.size()) {
+				throw new EntityNotFoundException("Uma ou mais fazendas não foram encontradas");
+			}
+			entity.setFarmsteads(new ArrayList<>(farmsteads));
+		}
 	}
 }

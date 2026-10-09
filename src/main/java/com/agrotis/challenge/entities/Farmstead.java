@@ -21,8 +21,8 @@ import lombok.Setter;
 public class Farmstead extends BaseEntity implements FinancialCalulable {
 	private static final long serialVersionUID = 1L;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "grower_id", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "grower_id")
 	private Grower grower;
 	
 	private BigDecimal totalAreaInHectares;

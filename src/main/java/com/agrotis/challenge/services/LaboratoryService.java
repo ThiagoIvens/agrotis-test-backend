@@ -1,5 +1,6 @@
 package com.agrotis.challenge.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -26,19 +27,33 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LaboratoryService {
 
-	private final LaboratoryRepository laboratoryRepository = null;
+	private final LaboratoryRepository laboratoryRepository;
 	private final LaboratoryMapper laboratoryMapper = new LaboratoryMapper();
+
+	private static final LocalDate MIN_DATE = LocalDate.of(1900, 1, 1);
+	private static final LocalDate MAX_DATE = LocalDate.of(9999, 12, 31);
 
 	@Transactional(readOnly = true)
 	public List<LaboratoryReportResponseDTO> generateReport(ReportFilterDTO filter) {
-		return laboratoryRepository.generateLaboratoryReport(
-				filter.getInitialDateInit(),
-				filter.getInitialDateEnd(),
-				filter.getFinalDateInit(),
-				filter.getFinalDateEnd(),
-				filter.getSearch(),
-				filter.getMinGrowerQty());
+		
+	    String search = filter.getSearch();
+	    String searchPattern = (search == null || search.isBlank())
+	            ? "%"
+	            : "%" + search.trim().toLowerCase() + "%";
+
+	    return laboratoryRepository.generateLaboratoryReport(
+	            orDefault(filter.getInitialDateInit(), MIN_DATE),
+	            orDefault(filter.getInitialDateEnd(), MAX_DATE),
+	            orDefault(filter.getFinalDateInit(), MIN_DATE),
+	            orDefault(filter.getFinalDateEnd(), MAX_DATE),
+	            searchPattern,
+	            filter.getMinGrowerQty() != null ? filter.getMinGrowerQty() : 0L);
 	}
+
+	private LocalDate orDefault(LocalDate value, LocalDate defaultValue) {
+	    return value != null ? value : defaultValue;
+	}
+
 
 	@Transactional(readOnly = true)
 	public PaginatedResponse<LaboratoryDTO> getAll(@NonNull Pageable pageable) {

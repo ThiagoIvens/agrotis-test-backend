@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FarmsteadService {
 
-	private final FarmsteadRepository farmsteadRepository = null;
+	private final FarmsteadRepository farmsteadRepository;
 	private final FarmsteadMapper farmsteadMapper = new FarmsteadMapper();
 
 	@Transactional(readOnly = true)

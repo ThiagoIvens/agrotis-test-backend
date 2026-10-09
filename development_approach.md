@@ -162,8 +162,8 @@
 	- Pedi para a IA gerar alguns DTO e corrigir uns que havia deixado um pouco de lado na construção dos services.
 	- Chequei o Swagger para ver se estava tudo certo.
 
-TODO:
-- Frontend em React.
 
-- Criar os testes para cada endpoint com IA tambem para poupar tempo.
-- Rodar os testes e validar a cobertura tambem.
+	- Percebi um erro de CORS, pedi para a IA gerar um arquivo de configuração basico de CORS.
+	- Ao conectar o Frontend com o backend, debuggando percebi o caso de N+1 para listagem de produtores e então resolvi ele.
+
+
