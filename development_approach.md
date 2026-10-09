@@ -167,3 +167,88 @@
 	- Ao conectar o Frontend com o backend, debuggando percebi o caso de N+1 para listagem de produtores e então resolvi ele.
 
 
+- Criação de testes:
+    - Gerei os testes partindo do que julgo mais critico.
+        1. Camada de Services
+        2. Camada de Controllers
+        3. Camada de Mappers (principalmente para evitar dados nulos)
+    - Pelo que encontrei umas das bibliotecas mais utilizadas para testes são JUnit 5 + Mockito.
+    - Bem, por falta de conhecimento nessas ferramentas, utilizei a IA para a geração destes testes.
+	- Minha IA nao estava gerando todos arquivos juntos Entao separei e dei instruções para cada prompt visando uma camada de codigo em cada um.
+    ```
+        Atue como um desenvolvedor analitico e crie testes para garantir a qualidade do projeto 
+		Especificações:
+			- Java 17 + Spring Boot 3.4.x.
+			- com.agrotis.challenge (Project package)
+			- Usar JUnit 5 + Mockito.
+			- Tem que estar detalhado o que cada teste esta testando de fato.
+		Voce devera criar testes para as seguintes camadas do projeto.
+		Camada de Services
+			Diretrizes:
+				- Testar toda a regra de negócio, validações, cálculos financeiros (ex: operationCost * operationFee), regras de associação de entidades e exceções (como EntityNotFoundException)
+				- Testes Unitários
+			- Classes alvo: GrowerService, FarmsteadService e LaboratoryService
+			- metodos:
+				- (readOnly) PaginatedResponse<<respective_DTO>> getAll(@NonNull Pageable pageable)
+				- <respective_DTO> findById(@NonNull UUID id)
+				- <respective_DTO> create(<respective_request_DTO> request)
+				- <respective_DTO> update(@NonNull UUID id, <respective_request_DTO> request)
+				- void delete(@NonNull UUID id)
+			- LaboratoryService (metodo unico):
+				- List<LaboratoryReportResponseDTO> generateReport(ReportFilterDTO filter)
+	```
+	```
+		Atue como um desenvolvedor analitico e crie testes para garantir a qualidade do projeto 
+		Especificações:
+			- Java 17 + Spring Boot 3.4.x.
+			- com.agrotis.challenge (Project package)
+			- Usar JUnit 5 + Mockito.
+			- Tem que estar detalhado o que cada teste esta testando de fato.
+        Voce devera criar testes para as seguintes camadas do projeto.
+		Camada de Controllers
+			Diretrizes:
+			 	= Testar se os endpoints HTTP estão respondendo com os códigos de status corretos (200 OK, 201 Created, 404 Not Found), se as rotas estão mapeadas corretamente e se a validação de DTOs (@Valid) está funcionando nas requisições
+				- Testes de Integração / Web
+			- Classes alvo: GrowerController, FarmsteadController e LaboratoryController
+			- metodos:
+				- GET "/" -> ResponseEntity<PaginatedResponse<<respective_DTO>>> getAll(@ParameterObject Pageable pageable)
+				- GET "/{id}" -> ResponseEntity<<respective_DTO>> findById(@PathVariable UUID id)
+				- POST "/" -> ResponseEntity<<respective_DTO>> create(@Valid @RequestBody <respective_request_DTO> request)
+				- PUT "/{id}" -> ResponseEntity<<respective_DTO>> update(@PathVariable UUID id, @Valid @RequestBody <respective_request_DTO> request)
+				- DELETE "/{id}" -> ResponseEntity<Void> delete(@PathVariable UUID id)
+			- LaboratoryController (endpoint unico):
+				- GET "/reports" -> ResponseEntity<List<LaboratoryReportResponseDTO>> generateReport(@ParameterObject ReportFilterDTO filter)
+	```
+	```
+		Atue como um desenvolvedor analitico e crie testes para garantir a qualidade do projeto 
+		Especificações:
+			- Java 17 + Spring Boot 3.4.x.
+			- com.agrotis.challenge (Project package)
+			- Usar JUnit 5 + Mockito.
+			- Tem que estar detalhado o que cada teste esta testando de fato.
+        Voce devera criar testes para as seguintes camadas do projeto.
+		Camada de Mappers
+			Diretrizes:
+				- Testar se a conversão de Entidade para DTO e de Request DTO para Entidade está mapeando todos os campos corretamente (especialmente campos calculados e IDs relacionais)
+				- Testes Unitários simples
+			- Classes alvo: GrowerMapper, FarmsteadMapper e LaboratoryMapper
+			- Metodos:
+				- <respective_dto> toDTO(<respective_entity> entity)
+				- <respective_entity> toEntity(<respective_request_dto> request)
+				- void updateEntityFromDTO(<respective_request_dto> request_dto, <respective_entity> entity)
+	```
+	```
+		Atue como um desenvolvedor analitico e crie testes para garantir a qualidade do projeto 
+		Especificações:
+			- Java 17 + Spring Boot 3.4.x.
+			- com.agrotis.challenge (Project package)
+			- Usar JUnit 5 + Mockito.
+			- Tem que estar detalhado o que cada teste esta testando de fato.
+        Voce devera criar mocks para as entidades do projeto.
+			Diretrizes:
+			- Tem que ser uma fabrica de dados falsos automatizada (Nada de um JSON imenso que algum metodo le e poe no banco)
+			- Deve rodar toda vez que inicia o projeto caso nao haja dados no banco
+    ```
+	- Como esperado ela não gerou totalmente correto, então passei um tempo reajustando.
+	- Enfim rodei e passou em todos testes. Alem de tudo estar funcionando com o frontend.
+	- E finalmente o ajuste final no README.md

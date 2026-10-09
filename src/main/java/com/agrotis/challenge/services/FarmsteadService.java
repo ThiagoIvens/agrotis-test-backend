@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class FarmsteadService {
 
 	private final FarmsteadRepository farmsteadRepository;
-	private final FarmsteadMapper farmsteadMapper = new FarmsteadMapper();
+	private final FarmsteadMapper farmsteadMapper;
 
 	@Transactional(readOnly = true)
 	public PaginatedResponse<FarmsteadDTO> getAll(@NonNull Pageable pageable) {

@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class LaboratoryService {
 
 	private final LaboratoryRepository laboratoryRepository;
-	private final LaboratoryMapper laboratoryMapper = new LaboratoryMapper();
+	private final LaboratoryMapper laboratoryMapper;
 
 	private static final LocalDate MIN_DATE = LocalDate.of(1900, 1, 1);
 	private static final LocalDate MAX_DATE = LocalDate.of(9999, 12, 31);
