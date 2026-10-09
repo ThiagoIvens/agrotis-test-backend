@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.agrotis.challenge.dtos.FarmsteadSummaryDTO;
 import com.agrotis.challenge.dtos.GrowerDTO;
 import com.agrotis.challenge.dtos.GrowerRequestDTO;
 import com.agrotis.challenge.entities.Grower;
@@ -37,11 +38,9 @@ public class GrowerMapper implements BaseMapper<Grower, GrowerDTO, GrowerRequest
 		}
 
 		if (entity.getFarmsteads() != null) {
-			List<UUID> farmsteadIds = entity.getFarmsteads().stream()
-					.filter(Objects::nonNull)
-					.map(farmstead -> farmstead.getId())
-					.toList();
-			dto.setFarmsteadIds(farmsteadIds);
+			List<FarmsteadSummaryDTO> farmsteads = entity.getFarmsteads().stream().filter(Objects::nonNull)
+					.map(farmstead -> new FarmsteadSummaryDTO(farmstead.getId(), farmstead.getName())).toList();
+			dto.setFarmsteads(farmsteads);
 		}
 
 		return dto;

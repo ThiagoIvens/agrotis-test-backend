@@ -62,7 +62,7 @@ class GrowerServiceTest {
 		Pageable pageable = PageRequest.of(0, 10);
 		Page<Grower> growerPage = new PageImpl<>(List.of(grower), pageable, 1);
 
-		when(growerRepository.findAll(pageable)).thenReturn(growerPage);
+		when(growerRepository.findAllWithRelations(pageable)).thenReturn(growerPage);
 		when(growerMapper.toDTO(any(Grower.class))).thenReturn(responseDTO);
 
 		// Act
@@ -72,7 +72,7 @@ class GrowerServiceTest {
 		assertThat(result).isNotNull();
 		assertThat(result.content()).hasSize(1);
 		assertThat(result.totalElements()).isEqualTo(1);
-		verify(growerRepository, times(1)).findAll(pageable);
+		verify(growerRepository, times(1)).findAllWithRelations(pageable);
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class GrowerServiceTest {
 		// Arrange
 		responseDTO.setId(growerId);
 		
-		when(growerRepository.findById(growerId)).thenReturn(Optional.of(grower));
+		when(growerRepository.findByIdWithRelations(growerId)).thenReturn(Optional.of(grower));
 		when(growerMapper.toDTO(grower)).thenReturn(responseDTO);
 
 		// Act
@@ -90,21 +90,21 @@ class GrowerServiceTest {
 		// Assert
 		assertThat(result).isNotNull();
 		assertThat(result.getId()).isEqualTo(growerId);
-		verify(growerRepository, times(1)).findById(growerId);
+		verify(growerRepository, times(1)).findByIdWithRelations(growerId);
 	}
 
 	@Test
 	@DisplayName("Deve lançar EntityNotFoundException quando o ID do produtor não for encontrado")
 	void findById_ShouldThrowException_WhenIdNotFound() {
 		// Arrange
-		when(growerRepository.findById(growerId)).thenReturn(Optional.empty());
+		when(growerRepository.findByIdWithRelations(growerId)).thenReturn(Optional.empty());
 
 		// Act & Assert
 		assertThatThrownBy(() -> growerService.findById(growerId))
 				.isInstanceOf(EntityNotFoundException.class)
 				.hasMessageContaining("Produtor não encontrado com o ID: " + growerId);
 
-		verify(growerRepository, times(1)).findById(growerId);
+		verify(growerRepository, times(1)).findByIdWithRelations(growerId);
 	}
 
 	@Test

@@ -38,14 +38,13 @@ public class GrowerService {
 
 	@Transactional(readOnly = true)
 	public PaginatedResponse<GrowerDTO> getAll(@NonNull Pageable pageable) {
-		Page<Grower> page = growerRepository.findAll(pageable);
-
+		Page<Grower> page = growerRepository.findAllWithRelations(pageable);
 		return PaginatedResponse.from(page, growerMapper::toDTO);
 	}
 
 	@Transactional(readOnly = true)
 	public GrowerDTO findById(@NonNull UUID id) {
-		Grower entity = growerRepository.findById(id)
+		Grower entity = growerRepository.findByIdWithRelations(id)
 				.orElseThrow(() -> new EntityNotFoundException("Produtor não encontrado com o ID: " + id));
 		return growerMapper.toDTO(entity);
 	}
@@ -80,21 +79,35 @@ public class GrowerService {
 	private void applyRelations(Grower entity, GrowerRequestDTO request) {
 		UUID laboratoryId = request.getLaboratoryId();
 		if (laboratoryId != null) {
-			Laboratory lab = laboratoryRepository.findById(laboratoryId)
-					.orElseThrow(() -> new EntityNotFoundException(
-							"Laboratório não encontrado com o ID: " + request.getLaboratoryId()));
+			Laboratory lab = laboratoryRepository.findById(laboratoryId).orElseThrow(() -> new EntityNotFoundException(
+					"Laboratório não encontrado com o ID: " + request.getLaboratoryId()));
 			entity.setLaboratory(lab);
 		} else {
 			entity.setLaboratory(null);
 		}
 
-		if (request.getFarmsteadIds() != null) {
+		if (entity.getFarmsteads() != null) {
+			for (Farmstead oldFarm : entity.getFarmsteads()) {
+				oldFarm.setGrower(null);
+				farmsteadRepository.save(oldFarm);
+			}
+			entity.getFarmsteads().clear();
+		} else {
+			entity.setFarmsteads(new ArrayList<>());
+		}
+
+		if (request.getFarmsteadIds() != null && !request.getFarmsteadIds().isEmpty()) {
 			Set<UUID> ids = new HashSet<>(request.getFarmsteadIds());
 			List<Farmstead> farmsteads = farmsteadRepository.findAllById(ids);
 			if (farmsteads.size() != ids.size()) {
 				throw new EntityNotFoundException("Uma ou mais fazendas não foram encontradas");
 			}
-			entity.setFarmsteads(new ArrayList<>(farmsteads));
+
+			for (Farmstead farmstead : farmsteads) {
+				farmstead.setGrower(entity);
+				farmsteadRepository.save(farmstead);
+				entity.getFarmsteads().add(farmstead);
+			}
 		}
 	}
 }

@@ -16,7 +16,7 @@ import lombok.Setter;
 public class GrowerDTO extends BaseDTO {
 	private UUID laboratoryId;
 	private String laboratoryName;
-	private List<UUID> farmsteadIds;
+	private List<FarmsteadSummaryDTO> farmsteads;
 	private LocalDate operationInitialDate;
 	private LocalDate operationFinalDate;
 	private String observations;

@@ -37,6 +37,7 @@ class GrowerMapperTest {
 		Farmstead farmstead = new Farmstead();
 		UUID farmsteadId = UUID.randomUUID();
 		farmstead.setId(farmsteadId);
+		farmstead.setName("Fazenda Esperança");
 
 		Grower grower = new Grower();
 		grower.setId(UUID.randomUUID());
@@ -63,8 +64,12 @@ class GrowerMapperTest {
 		assertThat(dto.getCalculatedValue()).isEqualByComparingTo(new BigDecimal("250.00"));
 		assertEquals(laboratory.getId(), dto.getLaboratoryId());
 		assertEquals(laboratory.getName(), dto.getLaboratoryName());
-		assertEquals(1, dto.getFarmsteadIds().size());
-		assertEquals(farmsteadId, dto.getFarmsteadIds().get(0));
+		
+		// Validação da lista de FarmsteadSummaryDTO (farmsteads)
+		assertNotNull(dto.getFarmsteads());
+		assertEquals(1, dto.getFarmsteads().size());
+		assertEquals(farmsteadId, dto.getFarmsteads().get(0).getId());
+		assertEquals("Fazenda Esperança", dto.getFarmsteads().get(0).getName());
 	}
 
 	@Test

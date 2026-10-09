@@ -1,5 +1,6 @@
 package com.agrotis.challenge.controllers;
 
+import com.agrotis.challenge.dtos.FarmsteadSummaryDTO;
 import com.agrotis.challenge.dtos.GrowerDTO;
 import com.agrotis.challenge.dtos.GrowerRequestDTO;
 import com.agrotis.challenge.dtos.PaginatedResponse;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +45,7 @@ class GrowerControllerTest {
 
 	private UUID existingId;
 	private UUID nonExistingId;
+	private UUID farmsteadId;
 	private GrowerDTO growerDTO;
 	private String validJsonPayload;
 
@@ -52,16 +53,19 @@ class GrowerControllerTest {
 	void setUp() {
 		existingId = UUID.randomUUID();
 		nonExistingId = UUID.randomUUID();
+		farmsteadId = UUID.randomUUID();
 
 		growerDTO = new GrowerDTO();
 		growerDTO.setId(existingId);
 		growerDTO.setName("Produtor Agrícola Silva");
-		// CPF com dígitos verificadores reais 
-		growerDTO.setRegistration("123.456.789-09"); 
+		growerDTO.setRegistration("123.456.789-09");
 		growerDTO.setAddress("Rodovia BR-116, Km 50");
 		growerDTO.setLaboratoryId(UUID.randomUUID());
 		growerDTO.setLaboratoryName("AgroLab Central");
-		growerDTO.setFarmsteadIds(List.of(UUID.randomUUID()));
+
+		// Ajustado para usar FarmsteadSummaryDTO no DTO de resposta
+		growerDTO.setFarmsteads(List.of(new FarmsteadSummaryDTO(farmsteadId, "Fazenda Modelo")));
+
 		growerDTO.setOperationInitialDate(LocalDate.of(2026, 1, 1));
 		growerDTO.setOperationFinalDate(LocalDate.of(2026, 12, 31));
 		growerDTO.setObservations("Operação de safra principal");
@@ -69,6 +73,7 @@ class GrowerControllerTest {
 		growerDTO.setCommissionRate(new BigDecimal("5.00"));
 		growerDTO.setCalculatedValue(new BigDecimal("5002.50"));
 
+		// Mantém farmsteadIds no payload de requisição (GrowerRequestDTO)
 		validJsonPayload = String.format("""
 				{
 					"name": "Produtor Agrícola Silva",
@@ -82,7 +87,7 @@ class GrowerControllerTest {
 					"production": 1000.50,
 					"commissionRate": 5.00
 				}
-				""", growerDTO.getLaboratoryId(), growerDTO.getFarmsteadIds().get(0));
+				""", growerDTO.getLaboratoryId(), farmsteadId);
 	}
 
 	@Nested
@@ -92,7 +97,7 @@ class GrowerControllerTest {
 		@Test
 		@DisplayName("Deve retornar HTTP 200 OK e PaginatedResponse")
 		void shouldReturn200OKAndPaginatedList() throws Exception {
-			Page<GrowerDTO> growerPage = new PageImpl<>(List.of(growerDTO), PageRequest.of(0, 10), 1L);
+			var growerPage = new PageImpl<>(List.of(growerDTO), PageRequest.of(0, 10), 1L);
 			PaginatedResponse<GrowerDTO> paginatedResponse = PaginatedResponse.from(growerPage);
 
 			given(growerService.getAll(any(Pageable.class))).willReturn(paginatedResponse);
@@ -101,6 +106,8 @@ class GrowerControllerTest {
 					.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 					.andExpect(jsonPath("$.content[0].id").value(existingId.toString()))
 					.andExpect(jsonPath("$.content[0].name").value("Produtor Agrícola Silva"))
+					.andExpect(jsonPath("$.content[0].farmsteads[0].id").value(farmsteadId.toString()))
+					.andExpect(jsonPath("$.content[0].farmsteads[0].name").value("Fazenda Modelo"))
 					.andExpect(jsonPath("$.totalElements").value(1)).andExpect(jsonPath("$.totalPages").value(1))
 					.andExpect(jsonPath("$.isFirst").value(true));
 		}
@@ -117,7 +124,8 @@ class GrowerControllerTest {
 
 			mockMvc.perform(get("/api/v1/growers/{id}", existingId).contentType(MediaType.APPLICATION_JSON))
 					.andExpect(status().isOk()).andExpect(jsonPath("$.id").value(existingId.toString()))
-					.andExpect(jsonPath("$.name").value("Produtor Agrícola Silva"));
+					.andExpect(jsonPath("$.name").value("Produtor Agrícola Silva"))
+					.andExpect(jsonPath("$.farmsteads[0].id").value(farmsteadId.toString()));
 		}
 
 		@Test
@@ -141,7 +149,7 @@ class GrowerControllerTest {
 
 			mockMvc.perform(post("/api/v1/growers").contentType(MediaType.APPLICATION_JSON).content(validJsonPayload))
 					.andExpect(status().isCreated()).andExpect(jsonPath("$.id").value(existingId.toString()))
-					.andExpect(jsonPath("$.name").value("Produtor Agrícola Silva"));
+					.andExpect(jsonPath("$.farmsteads[0].name").value("Fazenda Modelo"));
 		}
 
 		@Test
